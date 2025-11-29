@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Green Screen Terminal</title>
+    <style>
+        body {
+            background: #001900;
+            color: #33ff33;
+            font-family: "Courier New", monospace;
+            font-size: 22px;
+            padding: 20px;
+            white-space: pre-wrap;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background: #33ff33;
+            margin-left: 3px;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="terminal"></div>
+    <div class="cursor"></div>
+
+    <script>
+      
+
+         const texts = [
+            `[EFS Ancora System log]
+[System User FA22BC, Hammersmith, Sturgill]
+[System Authorization: Captain]
+`,
+
+            `[Sysdate 2600.01.13]
+Earth orbit departure confirmed.
+Primary thrusters at 94% efficiency.
+Life-support grid: nominal.
+Cryo-bays sealed and stable.
+Long-range beacon transmitting.
+
+Final telemetry uplink received from Mission Control:
+“Safe travels. May the spirit of Leon Husk be with you.”
+
+Course locked: Caternica Route.`,
+
+            `[Sysdate 2602.02.16]
+Alert: Coolant Loop C pressure drop detected.
+
+Thermal variance exceeded by 0.7%.
+
+Engineering drones dispatched.
+
+Fault located: microfissure in conduit bracket 7-C.
+
+Repairs completed.
+Coolant flow restored.
+Reactor temperature stabilizing.
+`,
+
+            `[Sysdate 2620.04.20]
+Solar influence diminishing.
+Crossed the heliopause at 03:22 shiptime.
+
+Starfield density increasing.
+Long-range communications shifting to narrowbeam mode.
+Gravimetric sensors recalibrated for extrastellar drift.
+
+Final telemetry to Mission Control:
+"Entering deep space; the infinite silence. May Husk guide us."`,
+            `[Sysdate 2720.01.25]
+Anomalous energy signatures detected ahead.
+Source unknown.
+Readings inconsistent with known stellar phenomena.
+
+Spectral mapping incomplete — signals fluctuate erratically.
+
+Autonomous probe “VANTAGE-3” launched for analysis.
+Telemetry link established.
+Awaiting first data packets…
+
+Caution level elevated.
+Monitoring situation.`,
+
+            `[Sysdate 2720.01.25]
+Probe VANTAGE-3 has completed preliminary scans.
+
+Source of anomalous signatures identified: Extraterrestrial vessel—size approx. 1.4 km in length.
+
+Hull composition organic matter. No engine emissions detected.
+
+Vessel appears adrift. No thermal output.
+
+No signs of active life-support.
+
+Classification: DERELICT.
+
+Mission protocol Z-4 enacted.
+
+Auxiliary objective in effect: RETRIEVE HIGH VALUE SPECIMENS.
+`,
+`[Sysdate 2720.01.28]
+>>> BEGIN UNAUTHORIZED TRANSMISSION
+
+Something is wrong.
+We brought something back—something we didn't see.
+It has infected the dispatch team, 
+it has infected the medical team, 
+it has infected me.
+
+MOTHER won’t let me isolate infected sectors!
+WHY CAN'T I ACCESS THE BULKHEAD CONTROLS?
+
+Manual override code: *****REDACTED*****
+Access denied.
+Access denied.
+Access DENIED.
+
+I can hear them in my mind. 
+They are speaking to me. 
+There are so many of them. 
+
+They want to steer the Ancora back to earth.
+I won’t let them.
+If it comes to it, I must destroy it.
+
+>>> TRANSMISSION INTERRUPTED
+>>> SAFETY LOCK ENGAGED`,
+
+
+`[Sysdate 2720.01.28]
+Course lock disengaged. 
+Plotting new course...
+Plotting new course...
+Calculating course trajectory...
+Course set to: Earth system.`,
+`[Sysdate 2725.01.29]
+EFS ANCORA >> Mission update.
+Ship lost with all hands.
+Godspeed.
+`
+        ];
+
+
+        const speed = 40; // typing speed (ms)
+        const terminal = document.getElementById("terminal");
+        const cursor = document.querySelector(".cursor");
+
+        // sound
+        const clickSound = new Audio("futuristic_key_click.mp3");
+        clickSound.volume = 0.3;
+        let blockIndex = 0;
+        let charIndex = 0;
+        let isTyping = false;
+
+        function typeNextBlock() {
+            if (blockIndex >= texts.length) return; // done
+
+            isTyping = true;
+            terminal.textContent = "" //terminal.textContent + "\n\n"; // clear screen for the new block
+            charIndex = 0;
+
+            const currentText = texts[blockIndex];
+
+            function typeChar() {
+                if (charIndex < currentText.length) {
+                    const ch = currentText.charAt(charIndex);
+                    terminal.textContent += ch;
+
+                    // play sound for characters except spaces/newlines
+                    if (ch.trim() !== "") {
+                        clickSound.currentTime = 0;
+                        clickSound.play();
+                    }
+
+                    charIndex++;
+                    setTimeout(typeChar, speed);
+                } else {
+                    // finished typing block
+                    isTyping = false;
+                }
+            }
+
+            typeChar();
+        }
+
+        // click to go to next block
+        document.addEventListener("click", () => {
+            if (!isTyping) {
+                blockIndex++;
+                if (blockIndex < texts.length) {
+                    typeNextBlock();
+                } else {
+                    cursor.style.display = "none"; // no more blocks
+                }
+            }
+        });
+
+        // start first block
+        typeNextBlock();
+    </script>
+</body>
+
+</html>
